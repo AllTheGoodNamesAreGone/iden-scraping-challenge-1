@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
+
 Iden Challenge - Playwright Automation Script
-Automates the data extraction challenge for internship application
+
 """
 
 import json
@@ -41,7 +42,7 @@ class IdenChallengeScraper:
         sys.exit(0)
     
     def save_continuous(self, products):
-        """Save products immediately - called after every attempt"""
+        """Save products immediately - called after every attempt (This creates regular progress backups)"""
         print(f"SAVING: Attempting to save {len(products)} products...")
         
         try:
@@ -120,7 +121,7 @@ class IdenChallengeScraper:
                 print("ALL SAVES FAILED!")
     
     def load_previous_progress(self):
-        """Load any previous progress from temp file"""
+        """Load any previous progress from temp file, can resume after interrupt/CTRL+C"""
         if os.path.exists(self.temp_file):
             try:
                 with open(self.temp_file, 'r', encoding='utf-8') as f:
@@ -139,7 +140,7 @@ class IdenChallengeScraper:
         return False
         
     def save_session(self, context):
-        """Save session cookies for future use"""
+        """Save session cookies for future use - session management using session.json"""
         try:
             cookies = context.cookies()
             session_data = {
@@ -531,9 +532,9 @@ class IdenChallengeScraper:
             return []
     
     def extract_product_data(self):
-        """Extract all product data - SCROLL TO BOTTOM ONLY VERSION"""
+        """Extract all product data """
         try:
-            print("Starting SCROLL-TO-BOTTOM extraction strategy...")
+            #Scrolls directly to bottom of table container at each try, checks for 20 new products, keeps the waiting time constant
             
             # Check previous progress
             if not self.load_previous_progress():
@@ -564,7 +565,6 @@ class IdenChallengeScraper:
                 print("TESTING IMMEDIATE SAVE...")
                 self.save_continuous(self.all_products)
             
-            print("SCROLL-TO-BOTTOM strategy: Multiple scrolls to trigger lazy loading")
             
             # Cache for duplicate detection
             self._existing_ids_cache = {p.get('id') for p in self.all_products if p.get('id')}
@@ -714,7 +714,7 @@ class IdenChallengeScraper:
             return self.all_products if hasattr(self, 'all_products') else []
     
     def run(self):
-        """Main execution method"""
+
         try:
             print("Starting Iden Challenge automation...")
             
